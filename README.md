@@ -63,7 +63,7 @@ Is_High_School, Student_Count_Low_Income, Student_Count_Special_Ed, Student_Coun
 
 
 
-This model yielded an Adjusted R<sup>2</sup> of 0.56. Looking at the correlation map of the features below, it seems like there might be multicollinearity issues. Taking out certain collinear features may greatly import my Adjusted R<sup>2</sup>. While this is not ideal, it is enough to be able to identify some potential predictors of segregation.
+This model yielded an Adjusted R<sup>2</sup> of 0.56. Looking at the correlation map of the features below, it seems like there might be multicollinearity issues. This is supported by my model also having a high Condition Number. Taking out certain collinear features may greatly import my Adjusted R<sup>2</sup>. While this is not ideal, it is enough to be able to identify some potential predictors of segregation.
 
 <img src="img/corr_map.png">  
 
