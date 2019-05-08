@@ -13,22 +13,22 @@ Recently, the NAACP has come out in condemnation of charter schools, stating tha
 
 Sociologists use many different metrics to calculate segregation. Chicago is a very diverse city that has a very broad racial makeup. For this reason, it was important to choose a metric that would take all the racial subgroups in a school into consideration. I finally settled on the Theil index, which is calculated as follows:
 
-<img src="school_entropy.png" alt="drawing">
+<img src="img/school_entropy.png" alt="drawing">
 
-<img src="district_entropy.png" alt="drawing">  
+<img src="img/district_entropy.png" alt="drawing">  
 
-<img src="theil.png" alt="drawing">
+<img src="img/theil.png" alt="drawing">
 
 Where E<sub>i</sub> indicates the entropy of a school, E indicates the entropy of a district, <img src="pi.png" alt="drawing"  width="13"/> indicates a groups total share of a school or district, t<sub>i</sub> indicates the total population of a school, and T, the total population of the district. The Theil index will range from 0 to 1, where 0 indicates a very diverse district and 1 indicates a highly segregated district.
 
 
 ## Data
+To see interactive maps made in Folium, look at the jupyter notebooks in the notebooks folder. The following images are screenshots of the interactive maps.
+![2017 Map of Chicago School Districts](img/Map_2017.png)  
+Map representing the Theil index for each public network in Chicago for the 2016-2017 school year (network is the term the city of Chicago uses for its school districts). The circles indicate charter school locations. The shading of these circles shows the theil score for charter schools.
 
-![2017 Map of Chicago School Districts](Map_2017.png)  
-Map representing the Theil index for each network in Chicago for the 2016-2017 school year(network is the term the city of Chicago uses for its school districts)
-
-![2018 Map of Chicago School Districts](Map_2018.png)  
-Map representing the Theil index for each network in Chicago for the 2017-2018 school year.
+![2018 Map of Chicago School Districts](img/Map_2018.png)  
+Map representing the Theil index for each network in Chicago for the 2017-2018 school year. The circles indicate charter school locations. The shading of these circles shows the theil score for charter schools.
 
 
 ### 2017 Data
@@ -53,16 +53,26 @@ Performed 13 T-tests comparing the means of school entropy values between charte
 
 Networks 3, 5, 7, 8, 9, 11, 12, 13 all had high p-values, meaning there is no evidence that these schools have a different mean entropy score from charter schools. Over half the public school networks show no difference from charter schools in diversity.  
 
+## Regression analysis
+I also wanted to take a look at which features from my dataset influenced segregation in CPS. Therefore, I decided to perform a linear regression in order to see which features are statistically significant (beta value not equal to 0).
+
+The segregation metric involves a value (E<sub>i</sub>) that is calculated over all the schools in a district. Unfortunately, this introduces data leakage into the analysis, because the response variable has some influence from the test data, when performing a train-test split. One solution is to calculate the district entropy over the train set only, adjust the T value for the amount of schools in the district in the train set, and use that value of E and T when performing my calculations on the test set. However, to be careful, I decided to use school entropy as my response variable, in order to eliminate a lot of the issues  that arise when taking an average. I also needed to remove any features I used to calculate school entropy from my datset.
+
+A vanilla linear regression performed on normalized data using the statsmodels package, which provides a clearer readout than sklearn for this many features, shows the following features as significant:
+Is_High_School, Student_Count_Low_Income, Student_Count_Special_Ed, Student_Count_English_Learners, Dress_Code, Bilingual_Services, Refugee_Services, Title_1_Eligible, Average_ACT_School, PreSchool_Inclusive 	
+
+
+
+This model yielded an Adjusted R<sup>2</sup> of 0.56. Looking at the correlation map of the features below, it seems like there might be multicollinearity issues. Taking out certain collinear features may greatly import my Adjusted R<sup>2</sup>. While this is not ideal, it is enough to be able to identify some potential predictors of segregation.
+
+<img src="img/corr_map.png">  
+
 ## Future Directions
 
 If I had more time, I would have also calculated an exposure metric for each school district. This metric only looks at one group in comparison to the rest of the population, which would allow me to get a better sense of which racial group is over-represented in a segregated district. For example,
 the exposure metric could be used to compare the two most heavily represented groups in the region:  
 
-<img src="district_entropy.png" alt="drawing">  
+<img src="img/district_entropy.png">  
 
-Started preparing my data to run a linear regression, but got stalled in data cleaning.
-Ran into some issues with set-up concerning my response variable. The segregation metric involves a value (E<sub>i</sub>) that is calculated over all the schools in a district. Unfortunately, this introduces data leakage into the analysis, because the response variable has some influence from the test data, when performing a train-test split. One solution is to calculate the district entropy over the train set only, adjust the T value for the amount of schools in the district in the train set, and use that value of E and T when performing my calculations on the test set. A better response variable would have been school entropy. This would have eliminated a lot of the issues with taking an average.
-
-Another complication during the train-test split process would be that certain districts contain very few schools. For example, there are only four schools in the contract network. This puts these schools at risk of not being included in the test data. One way to correct for this might be to perform a train-test split on each subgroup and combine these subgroups into a larger train set and test set.
 
 Additionally, it would have been beneficial for me to perform a beta regression on this data. A beta regression would have been powerful because it is especially effective at modeling proportions. I would have to assume that the data follows a beta distribution in order to use a beta regression.
